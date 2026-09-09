@@ -1,0 +1,269 @@
+import React, { createContext, useContext, useState } from 'react';
+
+const LanguageContext = createContext();
+
+export const translations = {
+  en: {
+    brand_title: 'SAHAYAK AI',
+    brand_subtitle: 'Citizen Benefits Platform',
+    nav_home: 'Home',
+    nav_finder: 'Scheme Finder',
+    nav_assistant: 'AI Assistant',
+    nav_partners: 'Channel Partners',
+    nav_calculator: 'Calculator',
+    nav_applications: 'My Applications',
+    login_btn: 'Login',
+    logged_in_as: 'Citizen',
+    
+    // Homepage
+    badge_hero: 'Secure • Transparent • Citizen Friendly',
+    hero_title_1: 'Find the right',
+    hero_title_2: 'government scheme',
+    hero_title_3: 'for you.',
+    hero_desc: 'SAHAYAK AI uses AI and eligibility rules to match citizens with suitable government financial schemes and guide them to eligible channel partners.',
+    btn_find_scheme: 'Find My Scheme',
+    btn_ask_ai: 'Ask AI Assistant',
+    check_explainable: 'Explainable recommendations',
+    check_rule_based: 'Rule-based eligibility',
+    check_multilingual: 'Multilingual assistance',
+    
+    // Right Hero Card
+    card_your_benefits: 'YOUR BENEFITS',
+    card_personalized: 'Personalized for you',
+    card_count: '100+',
+    card_count_label: 'Government schemes available',
+    card_ai_matching: 'AI Matching',
+    card_ai_matching_val: 'Eligibility aware',
+    card_nearby_partners: 'Nearby Partners',
+    card_nearby_partners_val: 'Eligible partners only',
+    
+    // One Platform banner
+    one_platform: 'ONE PLATFORM',
+    platform_tagline: 'End-to-end Citizen Financial Empowerment',
+    
+    // Partner screen
+    partners_title: 'Find an eligible partner near you',
+    partners_desc: "We don't simply show the nearest partner. SAHAYAK AI prioritizes partners that are eligible for your scheme.",
+    map_card_title: 'Eligible partners near you',
+    map_card_subtitle: 'Location-based partner routing',
+    btn_use_location: 'Use My Location',
+    eligible_partners_heading: 'Eligible partners',
+    based_on_profile: 'Based on your selected profile',
+    tag_eligible: 'Eligible',
+    tag_not_eligible: 'Incompatible Scheme',
+    btn_apply_partner: 'Apply with Partner',
+    partner_score_label: 'Partner Eligibility Score',
+    
+    // AI Assistant screen
+    assistant_badge: 'AI ASSISTANT',
+    assistant_title: 'Ask. Understand. Decide.',
+    assistant_desc: 'Get simple answers about government schemes, eligibility, financial assistance and application guidance.',
+    card_ai_rules_title: 'AI + Rules',
+    card_ai_rules_desc: 'AI recommendations are supported by deterministic eligibility rules.',
+    card_explain_title: 'Explainable Answers',
+    card_explain_desc: 'Understand why a scheme may or may not be suitable.',
+    card_multi_title: 'Multilingual & Voice',
+    card_multi_desc: 'Designed for accessible citizen interaction.',
+    chat_header_title: 'SAHAYAK AI',
+    chat_online: 'Online',
+    chat_welcome: "Hello! I'm your SAHAYAK AI assistant. I can help you find government schemes, check eligibility and locate eligible channel partners.",
+    quick_find_schemes: 'Find schemes',
+    quick_check_eligibility: 'Check eligibility',
+    quick_nearby_partners: 'Nearby partners',
+    quick_calculate_assistance: 'Calculate assistance',
+    input_placeholder: 'Ask about schemes or eligibility...',
+    
+    // Scheme Finder & Calculator
+    finder_title: 'AI Scheme Finder & Deterministic Rule Engine',
+    finder_subtitle: 'Enter your profile or voice requirement. AI structures your intent; our rule engine calculates verifiable eligibility.',
+    status_eligible: 'ELIGIBLE',
+    status_not_eligible: 'NOT ELIGIBLE',
+    status_more_info: 'MORE INFORMATION REQUIRED',
+    match_score: 'Match Score',
+    rules_satisfied: 'Rules Satisfied',
+    rules_failed: 'Rules Failed',
+    missing_info_label: 'Missing Information Required',
+    why_eligible_label: 'Why Eligible / Ineligible Explanation',
+    btn_calculate: 'Calculate Assistance',
+    btn_find_partners: 'Find Eligible Partners',
+    btn_apply_now: 'Apply Now'
+  },
+  
+  hi: {
+    brand_title: 'सहायक AI',
+    brand_subtitle: 'नागरिक लाभ मंच',
+    nav_home: 'होम',
+    nav_finder: 'योजना खोजें',
+    nav_assistant: 'AI सहायक',
+    nav_partners: 'चैनल पार्टनर्स',
+    nav_calculator: 'कैलकुलेटर',
+    nav_applications: 'मेरे आवेदन',
+    login_btn: 'लॉग इन',
+    logged_in_as: 'नागरिक',
+    
+    badge_hero: 'सुरक्षित • पारदर्शी • नागरिक अनुकूल',
+    hero_title_1: 'अपने लिए सही',
+    hero_title_2: 'सरकारी योजना',
+    hero_title_3: 'खोजें।',
+    hero_desc: 'सहायक AI नागरिकों को उपयुक्त सरकारी वित्तीय योजनाओं से जोड़ने और उन्हें प्रमाणित चैनल पार्टनर्स तक निर्देशित करने के लिए AI और पात्रता नियमों का उपयोग करता है।',
+    btn_find_scheme: 'मेरी योजना खोजें',
+    btn_ask_ai: 'AI सहायक से पूछें',
+    check_explainable: 'स्पष्ट व्याख्यात्मक अनुशंसाएं',
+    check_rule_based: 'नियम-आधारित पात्रता',
+    check_multilingual: 'बहुभाषी सहायता',
+    
+    card_your_benefits: 'आपके लाभ',
+    card_personalized: 'आपके लिए व्यक्तिगत',
+    card_count: '100+',
+    card_count_label: 'सरकारी योजनाएं उपलब्ध',
+    card_ai_matching: 'AI मैचिंग',
+    card_ai_matching_val: 'पात्रता जागरूक',
+    card_nearby_partners: 'नजदीकी पार्टनर्स',
+    card_nearby_partners_val: 'केवल पात्र पार्टनर्स',
+    
+    one_platform: 'एक मंच',
+    platform_tagline: 'नागरिकों का संपूर्ण वित्तीय सशक्तिकरण',
+    
+    partners_title: 'अपने नजदीकी पात्र भागीदार खोजें',
+    partners_desc: 'हम केवल निकटतम भागीदार नहीं दिखाते। सहायक AI उन भागीदारों को प्राथमिकता देता है जो आपकी योजना के लिए पात्र हैं।',
+    map_card_title: 'नजदीकी पात्र भागीदार',
+    map_card_subtitle: 'स्थान-आधारित भागीदार रूटिंग',
+    btn_use_location: 'मेरा स्थान उपयोग करें',
+    eligible_partners_heading: 'पात्र भागीदार',
+    based_on_profile: 'आपकी चयनित प्रोफ़ाइल के आधार पर',
+    tag_eligible: 'पात्र',
+    tag_not_eligible: 'असंगत योजना',
+    btn_apply_partner: 'पार्टनर द्वारा आवेदन करें',
+    partner_score_label: 'पार्टनर पात्रता स्कोर',
+    
+    assistant_badge: 'AI सहायक',
+    assistant_title: 'पूछें। समझें। निर्णय लें।',
+    assistant_desc: 'सरकारी योजनाओं, पात्रता, वित्तीय सहायता और आवेदन मार्गदर्शन के सरल उत्तर प्राप्त करें।',
+    card_ai_rules_title: 'AI + नियम',
+    card_ai_rules_desc: 'AI अनुशंसाएं सटीक पात्रता नियमों द्वारा समर्थित हैं।',
+    card_explain_title: 'स्पष्ट उत्तर',
+    card_explain_desc: 'समझें कि कोई योजना आपके लिए उपयुक्त क्यों है या क्यों नहीं।',
+    card_multi_title: 'बहुभाषी व आवाज',
+    card_multi_desc: 'सुलभ नागरिक बातचीत के लिए डिज़ाइन किया गया।',
+    chat_header_title: 'सहायक AI',
+    chat_online: 'ऑनलाइन',
+    chat_welcome: 'नमस्ते! मैं आपका सहायक AI हूँ। मैं आपको सरकारी योजनाएं खोजने, पात्रता जांचने और नजदीकी पात्र भागीदारों से जुड़ने में मदद कर सकता हूँ।',
+    quick_find_schemes: 'योजनाएं खोजें',
+    quick_check_eligibility: 'पात्रता जांचें',
+    quick_nearby_partners: 'नजदीकी भागीदार',
+    quick_calculate_assistance: 'सहायता की गणना करें',
+    input_placeholder: 'योजनाओं या पात्रता के बारे में पूछें...',
+    
+    finder_title: 'AI योजना खोजकर्ता और नियम इंजन',
+    finder_subtitle: 'अपनी प्रोफ़ाइल या आवश्यकता दर्ज करें। AI आपकी आवश्यकता समझता है; हमारा नियम इंजन पात्रता तय करता है।',
+    status_eligible: 'पात्र',
+    status_not_eligible: 'अपात्र',
+    status_more_info: 'अधिक जानकारी आवश्यक',
+    match_score: 'मैच स्कोर',
+    rules_satisfied: 'संतुष्ट नियम',
+    rules_failed: 'असफल नियम',
+    missing_info_label: 'आवश्यक अतिरिक्त जानकारी',
+    why_eligible_label: 'पात्रता का कारण',
+    btn_calculate: 'सहायता की गणना करें',
+    btn_find_partners: 'पात्र भागीदार खोजें',
+    btn_apply_now: 'अभी आवेदन करें'
+  },
+  
+  mr: {
+    brand_title: 'सहायक AI',
+    brand_subtitle: 'नागरिक लाभ मंच',
+    nav_home: 'मुख्यपृष्ठ',
+    nav_finder: 'योजना शोधा',
+    nav_assistant: 'AI सहाय्यक',
+    nav_partners: 'चॅनेल पार्टनर्स',
+    nav_calculator: 'कॅल्क्युलेटर',
+    nav_applications: 'माझे अर्ज',
+    login_btn: 'लॉग इन',
+    logged_in_as: 'नागरिक',
+    
+    badge_hero: 'सुरक्षित • पारदर्शक • नागरिक स्नेही',
+    hero_title_1: 'तुमच्यासाठी योग्य',
+    hero_title_2: 'सरकारी योजना',
+    hero_title_3: 'शोधा.',
+    hero_desc: 'सहायक AI नागरिकांना योग्य सरकारी योजनांशी जोडण्यासाठी आणि पात्र चॅनेल भागीदारांकडे मार्गदर्शन करण्यासाठी AI आणि पात्रता नियमांचा वापर करतो.',
+    btn_find_scheme: 'माझी योजना शोधा',
+    btn_ask_ai: 'AI सहाय्यकाला विचारा',
+    check_explainable: 'स्पष्ट विश्लेषणात्मक शिफारसी',
+    check_rule_based: 'नियम-आधारित पात्रता',
+    check_multilingual: 'बहुभाषिक सहाय्य',
+    
+    card_your_benefits: 'तुमचे फायदे',
+    card_personalized: 'तुमच्यासाठी वैयक्तिकृत',
+    card_count: '100+',
+    card_count_label: 'शासकीय योजना उपलब्ध',
+    card_ai_matching: 'AI जुळणी',
+    card_ai_matching_val: 'पात्रतेची जाणीव',
+    card_nearby_partners: 'जवळचे भागीदार',
+    card_nearby_partners_val: 'केवळ पात्र भागीदार',
+    
+    one_platform: 'एकच व्यासपीठ',
+    platform_tagline: 'नागरिकांचे संपूर्ण आर्थिक सक्षमीकरण',
+    
+    partners_title: 'तुमच्या जवळील पात्र भागीदार शोधा',
+    partners_desc: 'आम्ही फक्त सर्वात जवळचा भागीदार दाखवत नाही. सहायक AI तुमच्या योजनेसाठी पात्र असलेल्या भागीदारांना प्राधान्य देतो.',
+    map_card_title: 'जवळील पात्र भागीदार',
+    map_card_subtitle: 'स्थान-आधारित भागीदार मार्गक्रमण',
+    btn_use_location: 'माझे स्थान वापरा',
+    eligible_partners_heading: 'पात्र भागीदार',
+    based_on_profile: 'तुमच्या निवडलेल्या प्रोफाइलवर आधारित',
+    tag_eligible: 'पात्र',
+    tag_not_eligible: 'अपात्र योजना',
+    btn_apply_partner: 'या भागीदाराद्वारे अर्ज करा',
+    partner_score_label: 'भागीदार पात्रता गुण',
+    
+    assistant_badge: 'AI सहाय्यक',
+    assistant_title: 'विचारा. समजा. ठरवा.',
+    assistant_desc: 'शासकीय योजना, पात्रता, आर्थिक सहाय्य आणि अर्ज प्रक्रियेबद्दल सोपी उत्तरे मिळवा.',
+    card_ai_rules_title: 'AI + नियम',
+    card_ai_rules_desc: 'AI शिफारसी वस्तुनिष्ठ पात्रता नियमांवर आधारित आहेत.',
+    card_explain_title: 'स्पष्ट उत्तरे',
+    card_explain_desc: 'योजना तुमच्यासाठी का योग्य आहे किंवा का नाही हे समजून घ्या.',
+    card_multi_title: 'बहुभाषिक व व्हॉइस',
+    card_multi_desc: 'सुलभ नागरिक संवादासाठी डिझाइन केलेले.',
+    chat_header_title: 'सहायक AI',
+    chat_online: 'ऑनलाइन',
+    chat_welcome: 'नमस्कार! मी तुमचा सहायक AI आहे. मी तुम्हाला शासकीय योजना शोधण्यात, पात्रता तपासण्यात आणि अधिकृत भागीदार शोधण्यात मदत करू शकतो.',
+    quick_find_schemes: 'योजना शोधा',
+    quick_check_eligibility: 'पात्रता तपासा',
+    quick_nearby_partners: 'जवळचे भागीदार',
+    quick_calculate_assistance: 'अनुदान मोजा',
+    input_placeholder: 'योजना किंवा पात्रतेबद्दल विचारा...',
+    
+    finder_title: 'AI योजना शोधक व नियम इंजिन',
+    finder_subtitle: 'तुमची प्रोफाइल किंवा व्हॉइस इनपुट द्या. AI तुमची गरज समजतो आणि नियम इंजिन अचूक पात्रता ठरवतो.',
+    status_eligible: 'पात्र',
+    status_not_eligible: 'अपात्र',
+    status_more_info: 'अधिक माहिती आवश्यक',
+    match_score: 'जुळणी गुण',
+    rules_satisfied: 'पूर्ण झालेले नियम',
+    rules_failed: 'अपूर्ण नियम',
+    missing_info_label: 'आवश्यक कागदपत्रे/माहिती',
+    why_eligible_label: 'पात्रतेचे कारण',
+    btn_calculate: 'आर्थिक सहाय्य मोजा',
+    btn_find_partners: 'पात्र भागीदार शोधा',
+    btn_apply_now: 'आता अर्ज करा'
+  }
+};
+
+export function LanguageProvider({ children }) {
+  const [lang, setLang] = useState('en');
+
+  const t = (key) => {
+    return translations[lang]?.[key] || translations['en']?.[key] || key;
+  };
+
+  return (
+    <LanguageContext.Provider value={{ lang, setLang, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+export function useLanguage() {
+  return useContext(LanguageContext);
+}
