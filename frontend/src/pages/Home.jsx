@@ -143,6 +143,31 @@ export default function Home() {
                 <span>{t('btn_ask_ai')}</span>
               </button>
 
+              {/* Marginalized Entrepreneurs Schemes Direct Button */}
+              <button
+                onClick={() => navigate('/schemes?marginalized=true')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.6rem',
+                  backgroundColor: '#fef3c7',
+                  color: '#92400e',
+                  border: '1.5px solid #fde68a',
+                  borderRadius: '9999px',
+                  padding: '0.85rem 1.5rem',
+                  fontSize: '0.95rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#fde68a'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#fef3c7'}
+              >
+                <Sparkles size={17} color="#d97706" />
+                <span>{t('filter_marginalized_only')}</span>
+                <ChevronRight size={17} color="#d97706" />
+              </button>
+
             </div>
 
             {/* 3 Verification Checks */}

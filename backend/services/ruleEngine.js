@@ -194,7 +194,11 @@ function evaluateSchemeEligibility(citizen, scheme, rules = []) {
     satisfied_rules: satisfiedRules,
     failed_rules: failedRules,
     missing_info: missingInfo,
-    why_explanation: whySummary
+    why_explanation: whySummary,
+    is_marginalized_entrepreneur: Boolean(scheme.is_marginalized_entrepreneur),
+    marginalized_focus: scheme.marginalized_focus || null,
+    required_documents: scheme.required_documents || [],
+    application_process: scheme.application_process || []
   };
 }
 

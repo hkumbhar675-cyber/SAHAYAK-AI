@@ -48,6 +48,8 @@ CREATE TABLE schemes (
     min_age INTEGER DEFAULT 18,
     max_age INTEGER DEFAULT 70,
     max_income NUMERIC(12, 2) DEFAULT 1000000,
+    is_marginalized_entrepreneur BOOLEAN DEFAULT FALSE,
+    marginalized_focus VARCHAR(255),
     target_occupations JSONB,
     required_documents JSONB,
     application_process JSONB,

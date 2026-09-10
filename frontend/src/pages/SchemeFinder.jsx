@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useUser } from '../context/UserContext';
 import { checkEligibility, parseCitizenIntent, getSchemeById, submitApplication } from '../services/api';
@@ -17,6 +17,8 @@ import {
   Calculator,
   MapPin,
   FileText,
+  FileCheck2,
+  Users,
   Building2,
   ShieldCheck,
   Send,
@@ -44,8 +46,19 @@ import {
 
 export default function SchemeFinder() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { lang, t } = useLanguage();
   const { currentUser, updateUser } = useUser();
+
+  // Marginalized filter state (defaults to true if ?marginalized=true is in URL)
+  const [marginalizedOnly, setMarginalizedOnly] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('marginalized') === 'true';
+  });
+
+  // Interactive document readiness tracking state per scheme
+  const [readyDocs, setReadyDocs] = useState({});
+  const [openDocChecklists, setOpenDocChecklists] = useState({});
 
   // Natural query & voice state
   const [naturalQuery, setNaturalQuery] = useState('');
@@ -122,6 +135,35 @@ export default function SchemeFinder() {
     } finally {
       setEvaluating(false);
     }
+  };
+
+  // Helper to toggle a document checkbox for a scheme
+  const toggleDocCheck = (schemeId, docName) => {
+    setReadyDocs(prev => {
+      const schemeDocs = prev[schemeId] || {};
+      return {
+        ...prev,
+        [schemeId]: {
+          ...schemeDocs,
+          [docName]: !schemeDocs[docName]
+        }
+      };
+    });
+  };
+
+  // Helper to toggle checklist accordion for a scheme
+  const toggleDocChecklist = (schemeId) => {
+    setOpenDocChecklists(prev => ({
+      ...prev,
+      [schemeId]: !prev[schemeId]
+    }));
+  };
+
+  // Helper to get count of ready documents
+  const getDocReadyCount = (schemeId, requiredDocs = []) => {
+    if (!requiredDocs || requiredDocs.length === 0) return 0;
+    const schemeDocs = readyDocs[schemeId] || {};
+    return requiredDocs.filter(d => schemeDocs[d]).length;
   };
 
   // Voice Input handler
@@ -233,11 +275,18 @@ export default function SchemeFinder() {
     }
   };
 
-  // Filtered results
+  // Filtered results taking into account marginalizedOnly and statusFilter
   const filteredResults = results.filter(r => {
+    if (marginalizedOnly && !r.is_marginalized_entrepreneur) return false;
     if (statusFilter === 'ALL') return true;
     return r.status === statusFilter;
   });
+
+  const totalFilteredCount = results.filter(r => !marginalizedOnly || r.is_marginalized_entrepreneur).length;
+  const eligibleFilteredCount = results.filter(r => (!marginalizedOnly || r.is_marginalized_entrepreneur) && r.status === 'ELIGIBLE').length;
+  const moreInfoFilteredCount = results.filter(r => (!marginalizedOnly || r.is_marginalized_entrepreneur) && r.status === 'MORE INFORMATION REQUIRED').length;
+  const notEligibleFilteredCount = results.filter(r => (!marginalizedOnly || r.is_marginalized_entrepreneur) && r.status === 'NOT ELIGIBLE').length;
+  const marginalizedCount = results.filter(r => r.is_marginalized_entrepreneur).length;
 
   return (
     <div style={{ backgroundColor: '#ffffff', minHeight: 'calc(100vh - 70px)', padding: '2.5rem 1.5rem 4rem 1.5rem' }}>
@@ -459,14 +508,14 @@ export default function SchemeFinder() {
 
         {/* Section 2: Rule Engine Evaluation Results */}
         <div>
-          {/* Status Tabs */}
+          {/* Status Tabs and Marginalized Filter Bar */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
             gap: '1rem',
-            marginBottom: '1.5rem',
+            marginBottom: '1.25rem',
             borderBottom: '1px solid #e5e7eb',
             paddingBottom: '0.85rem'
           }}>
@@ -484,7 +533,7 @@ export default function SchemeFinder() {
                   cursor: 'pointer'
                 }}
               >
-                All Schemes ({results.length})
+                {t('filter_all_schemes')} ({totalFilteredCount})
               </button>
 
               <button
@@ -500,7 +549,7 @@ export default function SchemeFinder() {
                   cursor: 'pointer'
                 }}
               >
-                ✓ Eligible ({results.filter(r => r.status === 'ELIGIBLE').length})
+                ✓ {t('status_eligible')} ({eligibleFilteredCount})
               </button>
 
               <button
@@ -516,7 +565,7 @@ export default function SchemeFinder() {
                   cursor: 'pointer'
                 }}
               >
-                ? More Info Needed ({results.filter(r => r.status === 'MORE INFORMATION REQUIRED').length})
+                ? {t('status_more_info')} ({moreInfoFilteredCount})
               </button>
 
               <button
@@ -532,14 +581,75 @@ export default function SchemeFinder() {
                   cursor: 'pointer'
                 }}
               >
-                ✗ Ineligible ({results.filter(r => r.status === 'NOT ELIGIBLE').length})
+                ✗ {t('status_not_eligible')} ({notEligibleFilteredCount})
               </button>
             </div>
 
-            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-              Deterministic Rule Engine v1.0 • Evaluated against Maharashtra criteria
-            </span>
+            {/* Marginalized Entrepreneurs Dedicated Toggle */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <button
+                onClick={() => setMarginalizedOnly(!marginalizedOnly)}
+                title="Show only schemes for SC/ST, Women, OBC/Minorities, Artisans and Street Vendors"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.45rem 1.15rem',
+                  borderRadius: '9999px',
+                  border: marginalizedOnly ? '1.5px solid #d97706' : '1.5px solid #e2e8f0',
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
+                  backgroundColor: marginalizedOnly ? '#fef3c7' : '#ffffff',
+                  color: marginalizedOnly ? '#92400e' : '#475569',
+                  cursor: 'pointer',
+                  boxShadow: marginalizedOnly ? '0 2px 8px rgba(217, 119, 6, 0.2)' : 'none',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <Sparkles size={15} color={marginalizedOnly ? '#d97706' : '#64748b'} />
+                <span>{t('filter_marginalized_only')} ({marginalizedCount})</span>
+                {marginalizedOnly ? <Check size={15} color="#d97706" /> : null}
+              </button>
+            </div>
           </div>
+
+          {/* Active Marginalized Entrepreneurs Banner */}
+          {marginalizedOnly && (
+            <div style={{
+              backgroundColor: '#fffbeb',
+              border: '1.5px solid #fde68a',
+              borderRadius: '16px',
+              padding: '0.85rem 1.25rem',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '0.75rem'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <Sparkles size={18} color="#d97706" />
+                <span style={{ fontSize: '0.88rem', color: '#92400e', fontWeight: 600 }}>
+                  {t('marginalized_banner_text')}
+                </span>
+              </div>
+              <button
+                onClick={() => setMarginalizedOnly(false)}
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #d97706',
+                  borderRadius: '9999px',
+                  padding: '0.3rem 0.85rem',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  color: '#92400e',
+                  cursor: 'pointer'
+                }}
+              >
+                {t('filter_all_schemes')}
+              </button>
+            </div>
+          )}
 
           {/* Scheme Recommendation Cards */}
           {evaluating ? (
@@ -592,6 +702,26 @@ export default function SchemeFinder() {
                           <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f3d24', marginBottom: '0.35rem' }}>
                             {lang === 'hi' && scheme.scheme_name_hi ? scheme.scheme_name_hi : lang === 'mr' && scheme.scheme_name_mr ? scheme.scheme_name_mr : scheme.scheme_name}
                           </h3>
+
+                          {/* Marginalized Focus Badge */}
+                          {scheme.is_marginalized_entrepreneur && (
+                            <div style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.4rem',
+                              backgroundColor: '#fef3c7',
+                              border: '1px solid #fde68a',
+                              borderRadius: '8px',
+                              padding: '0.25rem 0.65rem',
+                              fontSize: '0.78rem',
+                              fontWeight: 700,
+                              color: '#92400e',
+                              marginBottom: '0.5rem'
+                            }}>
+                              <Sparkles size={13} color="#d97706" />
+                              <span>{t('badge_marginalized')}: {scheme.marginalized_focus}</span>
+                            </div>
+                          )}
 
                           <p style={{ fontSize: '0.9rem', color: '#4b5563', lineHeight: 1.5, maxWidth: '780px' }}>
                             {scheme.description}
@@ -668,6 +798,151 @@ export default function SchemeFinder() {
                           <span>{isExpanded ? 'Hide Rule Breakdown' : 'Explainable Rule Breakdown'}</span>
                           {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                         </button>
+                      </div>
+
+                      {/* Required Verification Documents Section on Card */}
+                      <div style={{
+                        marginTop: '1.25rem',
+                        padding: '1rem 1.25rem',
+                        backgroundColor: '#f8fafc',
+                        borderRadius: '14px',
+                        border: '1px solid #e2e8f0'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: '0.75rem',
+                          flexWrap: 'wrap',
+                          gap: '0.6rem'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <FileCheck2 size={18} color="#0f5132" strokeWidth={2.2} />
+                            <span style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f3d24' }}>
+                              {t('required_docs_title')} ({scheme.required_documents?.length || 0})
+                            </span>
+                            {getDocReadyCount(scheme.scheme_id, scheme.required_documents) > 0 && (
+                              <span style={{
+                                fontSize: '0.75rem',
+                                backgroundColor: '#dcfce7',
+                                color: '#15803d',
+                                fontWeight: 700,
+                                padding: '0.15rem 0.5rem',
+                                borderRadius: '9999px',
+                                border: '1px solid #86efac'
+                              }}>
+                                {getDocReadyCount(scheme.scheme_id, scheme.required_documents)} / {scheme.required_documents?.length || 0} Ready
+                              </span>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => toggleDocChecklist(scheme.scheme_id)}
+                            style={{
+                              background: '#ffffff',
+                              border: '1px solid #cbd5e1',
+                              borderRadius: '9999px',
+                              padding: '0.3rem 0.85rem',
+                              color: '#0f5132',
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
+                            }}
+                          >
+                            <span>{openDocChecklists[scheme.scheme_id] ? 'Close Checklist' : t('checklist_toggle')}</span>
+                            {openDocChecklists[scheme.scheme_id] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                          </button>
+                        </div>
+
+                        {/* Document Badges */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          {scheme.required_documents?.map((doc, dIdx) => {
+                            const isChecked = Boolean(readyDocs[scheme.scheme_id]?.[doc]);
+                            return (
+                              <button
+                                key={dIdx}
+                                onClick={() => toggleDocCheck(scheme.scheme_id, doc)}
+                                title="Click to mark document ready"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.4rem',
+                                  fontSize: '0.82rem',
+                                  padding: '0.35rem 0.75rem',
+                                  borderRadius: '8px',
+                                  backgroundColor: isChecked ? '#dcfce7' : '#ffffff',
+                                  color: isChecked ? '#15803d' : '#334155',
+                                  border: isChecked ? '1.5px solid #86efac' : '1px solid #cbd5e1',
+                                  fontWeight: isChecked ? 700 : 500,
+                                  cursor: 'pointer',
+                                  textAlign: 'left',
+                                  transition: 'all 0.15s ease'
+                                }}
+                              >
+                                {isChecked ? <CheckCircle2 size={14} color="#16a34a" strokeWidth={2.5} /> : <FileText size={14} color="#64748b" />}
+                                <span>{doc}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Interactive Checklist Drawer with Progress Bar */}
+                        {openDocChecklists[scheme.scheme_id] && (
+                          <div style={{
+                            marginTop: '1rem',
+                            paddingTop: '0.9rem',
+                            borderTop: '1px dashed #cbd5e1'
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+                              <span style={{ fontSize: '0.82rem', color: '#4b5563', fontWeight: 600 }}>
+                                {t('doc_checklist_summary')}
+                              </span>
+                              <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f5132' }}>
+                                {getDocReadyCount(scheme.scheme_id, scheme.required_documents)} of {scheme.required_documents?.length || 0} Ready ({Math.round(((getDocReadyCount(scheme.scheme_id, scheme.required_documents)) / (scheme.required_documents?.length || 1)) * 100)}%)
+                              </span>
+                            </div>
+                            <LinearProgress
+                              variant="determinate"
+                              value={((getDocReadyCount(scheme.scheme_id, scheme.required_documents)) / (scheme.required_documents?.length || 1)) * 100}
+                              style={{ height: '7px', borderRadius: '4px', marginBottom: '0.85rem', backgroundColor: '#e2e8f0' }}
+                            />
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.5rem' }}>
+                              {scheme.required_documents?.map((doc, dIdx) => {
+                                const isChecked = Boolean(readyDocs[scheme.scheme_id]?.[doc]);
+                                return (
+                                  <label
+                                    key={dIdx}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '0.55rem',
+                                      fontSize: '0.84rem',
+                                      color: isChecked ? '#15803d' : '#1f2937',
+                                      cursor: 'pointer',
+                                      backgroundColor: isChecked ? '#f0fdf4' : '#ffffff',
+                                      padding: '0.5rem 0.75rem',
+                                      borderRadius: '8px',
+                                      border: isChecked ? '1.5px solid #86efac' : '1px solid #e2e8f0',
+                                      transition: 'background-color 0.15s ease'
+                                    }}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={isChecked}
+                                      onChange={() => toggleDocCheck(scheme.scheme_id, doc)}
+                                      style={{ width: '16px', height: '16px', accentColor: '#0f5132', cursor: 'pointer' }}
+                                    />
+                                    <span style={{ fontWeight: isChecked ? 700 : 500 }}>{doc}</span>
+                                  </label>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 

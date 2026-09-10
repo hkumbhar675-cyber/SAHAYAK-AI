@@ -40,6 +40,7 @@ class StructuredProfile(BaseModel):
     category: Optional[str] = "General"
     gender: Optional[str] = "General"
     landholding_acres: Optional[float] = 0.0
+    marginalized_only: Optional[bool] = False
     requirement: Optional[str] = ""
 
 class ParseIntentResponse(BaseModel):
@@ -171,6 +172,14 @@ def parse_citizen_intent(req: ParseIntentRequest):
     if land_match:
         landholding_acres = float(land_match.group(1))
 
+    # 7. Marginalized Entrepreneur detection
+    is_marginalized = any(k in lower for k in [
+        'marginal', 'sc', 'st', 'standup', 'stand-up', 'svanidhi', 'street vendor',
+        'artisan', 'shg', 'बचत गट', 'महिला उद्योजक', 'महिला उद्यमी', 'वंचित', 'फेरीवाला'
+    ])
+    if is_marginalized:
+        suggested_categories.append("Marginalized Entrepreneurs")
+
     # Determine intent
     intent = "find_matching_schemes"
     if any(k in lower for k in ['partner', 'bank', 'branch', 'center', 'नजदीकी', 'जवळचे']):
@@ -194,6 +203,7 @@ def parse_citizen_intent(req: ParseIntentRequest):
             category=category,
             gender=gender,
             landholding_acres=landholding_acres,
+            marginalized_only=is_marginalized,
             requirement=raw_text
         ),
         extracted_keywords=keywords[:8],
@@ -208,7 +218,29 @@ def conversational_assistant(req: AssistantRequest):
     lang = req.language or "en"
     msg = req.message.strip().lower()
 
-    if any(k in msg for k in ['farmer', 'kisan', 'tractor', 'agriculture', 'शेती', 'शेतकरी', 'किसान']):
+    if any(k in msg for k in ['marginal', 'sc', 'st', 'standup', 'stand-up', 'svanidhi', 'वंचित', 'महिला उद्योज']):
+        intent = "schemes_marginalized"
+        if lang == "mr":
+            response_text = (
+                "वंचित व मागासवर्गीय उद्योजकांसाठी स्टँड-अप इंडिया (SC/ST व महिलांसाठी ₹१० लाख ते ₹१ कोटी), "
+                "महिला समृद्धी योजना (४% सवलतीचे कर्ज), PMEGP (३५% विशेष अनुदान) आणि पीएम स्वनिधी योजना आहेत. "
+                "प्रत्येक योजनेची आवश्यक कागदपत्रांची यादी तुम्ही थेट योजना कार्डावर पाहू शकता."
+            )
+        elif lang == "hi":
+            response_text = (
+                "वंचित एवं महिला उद्यमियों के लिए स्टैंड-अप इंडिया (SC/ST और महिला उद्यमियों हेतु ₹10 लाख से ₹1 करोड़), "
+                "महिला समृद्धि योजना (4% रियायती ब्याज), PMEGP (35% विशेष सब्सिडी) और पीएम स्वनिधि उपलब्ध हैं। "
+                "इनकी आवश्यक दस्तावेजों की सूची सीधे योजना कार्ड पर देखी जा सकती है।"
+            )
+        else:
+            response_text = (
+                "For marginalized entrepreneurs (SC/ST, Women, OBC/Minorities, Artisans and Street Vendors), "
+                "top initiatives include Stand-Up India (loans up to ₹1 Crore), Mahila Samriddhi (4% interest), "
+                "PMEGP (up to 35% subsidy), and PM SVANidhi. Check the complete Required Documents list directly on each card."
+            )
+        quick_actions = ["Marginalized Schemes", "Document Checklist", "Check Eligibility"]
+
+    elif any(k in msg for k in ['farmer', 'kisan', 'tractor', 'agriculture', 'शेती', 'शेतकरी', 'किसान']):
         intent = "schemes_agriculture"
         if lang == "mr":
             response_text = (

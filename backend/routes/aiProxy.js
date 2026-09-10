@@ -70,6 +70,23 @@ function parseCitizenIntentFallback(text) {
     landholding_acres = parseFloat(landMatch[1]);
   }
 
+  // Marginalized entrepreneur detection
+  const isMarginalizedIntent = Boolean(
+    lower.includes('marginal') || 
+    lower.includes('sc') || 
+    lower.includes('st') || 
+    lower.includes('stand-up') ||
+    lower.includes('standup') ||
+    lower.includes('street vendor') || 
+    lower.includes('artisan') || 
+    lower.includes('svanidhi') ||
+    lower.includes('shg') ||
+    lower.includes('बचत गट') ||
+    lower.includes('महिला उद्योजक') ||
+    lower.includes('महिला उद्यमी') ||
+    lower.includes('women entrepreneur')
+  );
+
   return {
     structured_profile: {
       age,
@@ -80,6 +97,7 @@ function parseCitizenIntentFallback(text) {
       category,
       gender,
       landholding_acres,
+      marginalized_only: isMarginalizedIntent,
       requirement: text
     },
     confidence: 0.92,
@@ -87,7 +105,8 @@ function parseCitizenIntentFallback(text) {
       age_detected: age,
       income_detected: annual_income,
       occupation_detected: occupation,
-      location_detected: district
+      location_detected: district,
+      marginalized_detected: isMarginalizedIntent
     }
   };
 }
@@ -133,7 +152,21 @@ router.post('/assistant', async (req, res) => {
     let reply = '';
     let quickActions = [];
 
-    if (lower.includes('farmer') || lower.includes('kisan') || lower.includes('tractor') || lower.includes('कृषी') || lower.includes('किसान')) {
+    if (lower.includes('marginal') || lower.includes('sc') || lower.includes('st') || lower.includes('standup') || lower.includes('stand-up') || lower.includes('svanidhi') || lower.includes('महिला उद्योज')) {
+      reply = language === 'mr'
+        ? "वंचित आणि महिला उद्योजकांसाठी विशेष योजना उपलब्ध आहेत: स्टँड-अप इंडिया (SC/ST व महिलांसाठी ₹१० लाख ते ₹१ कोटी), महिला समृद्धी योजना (४% सवलतीच्या दरात कर्ज), PMEGP (३५% विशेष अनुदान) आणि पीएम स्वनिधी (फेरीवाल्यांसाठी तारणमुक्त कर्ज). आपण या योजनांची आवश्यक कागदपत्रे पाहू शकता."
+        : language === 'hi'
+        ? "वंचित एवं महिला उद्यमियों के लिए प्रमुख योजनाएं: स्टैंड-अप इंडिया (SC/ST और महिला उद्यमियों हेतु ₹10 लाख से ₹1 करोड़), महिला समृद्धि योजना (4% रियायती ब्याज), PMEGP (35% विशेष सब्सिडी) और पीएम स्वनिधि (रेहड़ी-पटरी विक्रेताओं हेतु ऋण)। इन योजनाओं के लिए आवश्यक दस्तावेज सूची पोर्टल पर उपलब्ध है।"
+        : "For marginalized entrepreneurs, top schemes include: Stand-Up India (loans from ₹10 Lakhs to ₹1 Crore for SC/ST and Women), Mahila Samriddhi Yojana (micro-finance at 4% interest for backward class women), PMEGP (up to 35% capital subsidy for priority groups), and PM SVANidhi (collateral-free credit for street vendors). Check the required documents list directly on the Scheme Finder card.";
+      quickActions = ['Marginalized Schemes', 'Required Documents List', 'Check Eligibility', 'Nearby Partners'];
+    } else if (lower.includes('document') || lower.includes('कागदपत्रे') || lower.includes('दस्तावेज') || lower.includes('proof')) {
+      reply = language === 'mr'
+        ? "प्रत्येक योजनेसाठी आवश्यक कागदपत्रांची यादी (आधार कार्ड, ७/१२ उतारा, जात प्रमाणपत्र, प्रकल्प अहवाल, बँक पासबुक) आता 'Scheme Finder' मध्ये थेट प्रत्येक योजना कार्डावर उपलब्ध आहे. आपण कागदपत्र चेकलिस्ट वापरून आपली तयारी तपासू शकता."
+        : language === 'hi'
+        ? "हर सरकारी योजना के लिए आवश्यक दस्तावेजों की सूची (आधार कार्ड, 7/12 खतौनी, जाति प्रमाण पत्र, प्रोजेक्ट रिपोर्ट, बैंक पासबुक) अब सीधे 'योजना खोजें' के हर कार्ड पर प्रदर्शित है। आप दस्तावेज़ चेकलिस्ट से अपनी तैयारी भी जांच सकते हैं।"
+        : "Every scheme now displays its complete Required Verification Documents list upfront on its card in the Scheme Finder. You can also use the interactive checklist to mark off documents you have ready (such as Aadhaar, Caste Certificate, Project Report, and Bank Passbook).";
+      quickActions = ['View Document Checklist', 'Find Schemes', 'Check Eligibility'];
+    } else if (lower.includes('farmer') || lower.includes('kisan') || lower.includes('tractor') || lower.includes('कृषी') || lower.includes('किसान')) {
       reply = language === 'mr' 
         ? "महाराष्ट्रातील शेतकऱ्यांसाठी पीएम-किसान (₹६,००० वार्षिक) आणि महाडीबीटी कृषी यांत्रिकीकरण योजना (ट्रॅक्टर आणि अवजारांवर ५०% अनुदान) उपलब्ध आहेत. तुम्ही पात्रता तपासू इच्छिता का?"
         : language === 'hi'

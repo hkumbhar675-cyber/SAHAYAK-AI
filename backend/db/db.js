@@ -33,6 +33,8 @@ const store = {
       min_age: 18,
       max_age: 75,
       max_income: 300000,
+      is_marginalized_entrepreneur: false,
+      marginalized_focus: null,
       target_occupations: ['Farmer', 'Agricultural Laborer', 'Cultivator'],
       required_documents: ['Aadhaar Card', '7/12 Land Record Extract', 'Bank Passbook', 'Citizen Identity Proof'],
       application_process: ['eKYC verification online', 'Land records match by Tehsildar', 'Direct DBT transfer to Aadhaar linked bank account']
@@ -54,6 +56,8 @@ const store = {
       min_age: 18,
       max_age: 60,
       max_income: 1200000,
+      is_marginalized_entrepreneur: true,
+      marginalized_focus: 'SC, ST, OBC, Women, Minorities & Micro-Enterprises (Special 35% Subsidy)',
       target_occupations: ['Small Business', 'Entrepreneur', 'Artisan / Weaver', 'Unemployed Youth', 'Self Employed'],
       required_documents: ['Project Report', 'Educational Certificate (8th pass min for >10L)', 'Caste/Special Category Certificate', 'Aadhaar & PAN Card', 'Skill Training / EDP Certificate'],
       application_process: ['Online application on KVIC portal', 'District Level Task Force screening', 'Sanction by bank branch', '10-day EDP training', 'Subsidy release to TDR account']
@@ -75,8 +79,10 @@ const store = {
       min_age: 18,
       max_age: 65,
       max_income: 500000,
+      is_marginalized_entrepreneur: true,
+      marginalized_focus: 'Micro Retailers, Home-based Artisans, Hawkers & Small Vendors',
       target_occupations: ['Street Vendor', 'Small Business', 'Artisan / Weaver', 'Self Employed', 'Driver', 'Farmer'],
-      required_documents: ['Identity & Address Proof', 'Quotation of items to be purchased', 'Passport size photos', 'Current Business details'],
+      required_documents: ['Identity & Address Proof (Aadhaar / Voter ID)', 'Quotation of items to be purchased', 'Passport size photos', 'Current Business details proof'],
       application_process: ['Select nearest partner bank branch', 'Fill simplified 1-page Mudra form', 'No processing fee', 'Sanction within 7-10 days']
     },
     {
@@ -96,8 +102,10 @@ const store = {
       min_age: 18,
       max_age: 65,
       max_income: 800000,
+      is_marginalized_entrepreneur: true,
+      marginalized_focus: 'Growing Micro-Enterprises, Self-Employed Artisans & Small Shops',
       target_occupations: ['Small Business', 'Entrepreneur', 'Retailer', 'Self Employed'],
-      required_documents: ['Last 6 months bank statement', 'Proof of business existence', 'Sales tax/GST returns if applicable', 'Quotation for machinery/stocks'],
+      required_documents: ['Last 6 months bank statement', 'Proof of business registration/existence', 'Sales tax/GST returns if applicable', 'Machinery & Stock Quotation'],
       application_process: ['Submit business proposal to channel partner', 'Due diligence and credit appraisal', 'Sanction and disbursement with Mudra Card']
     },
     {
@@ -117,8 +125,10 @@ const store = {
       min_age: 18,
       max_age: 60,
       max_income: 2000000,
+      is_marginalized_entrepreneur: true,
+      marginalized_focus: 'Scheduled Caste (SC), Scheduled Tribe (ST) & Women Greenfield Entrepreneurs',
       target_occupations: ['Women', 'Entrepreneur', 'Small Business', 'Graduate'],
-      required_documents: ['Identity proof (SC/ST certificate or proof of Woman ownership)', 'Project proposal for greenfield unit', 'Collateral or CGSSI guarantee', 'Bank balance sheet'],
+      required_documents: ['Identity Proof (Aadhaar & PAN Card)', 'Caste Certificate (SC/ST) or Proof of 51%+ Woman Ownership', 'Detailed Greenfield Project Report', 'Bank Account Statement (Past 6 Months)', 'Pollution Control / NOC (if applicable)'],
       application_process: ['Apply on Stand-Up Mitra portal', 'Connect with Lead District Manager', 'Handholding support from SIDBI / NABARD', 'Bank sanction and monitoring']
     },
     {
@@ -138,6 +148,8 @@ const store = {
       min_age: 18,
       max_age: 70,
       max_income: 500000,
+      is_marginalized_entrepreneur: false,
+      marginalized_focus: null,
       target_occupations: ['Farmer', 'Cultivator'],
       required_documents: ['7/12 & 8A Land Extract', 'Aadhaar Card linked with Bank', 'Caste Certificate (for SC/ST 50% subsidy)', 'Quotation from authorized dealer'],
       application_process: ['Online registration on MahaDBT portal', 'Lottery/merit based selection', 'Pre-sanction letter', 'Purchase from empanelled dealer', 'Physical inspection and subsidy transfer']
@@ -159,8 +171,10 @@ const store = {
       min_age: 18,
       max_age: 65,
       max_income: 300000,
+      is_marginalized_entrepreneur: true,
+      marginalized_focus: 'Urban & Semi-urban Street Vendors, Hawkers & Daily Wage Micro-Vendors',
       target_occupations: ['Street Vendor', 'Daily Wage Earner', 'Hawker'],
-      required_documents: ['Vending Certificate / Urban Local Body ID Card', 'Aadhaar Card', 'Mobile Number linked with Bank', 'Recommendation letter from ULB'],
+      required_documents: ['Vending Certificate / Urban Local Body (ULB) Identity Card', 'Aadhaar Card with linked Mobile Number', 'Bank Passbook / Account Details', 'Letter of Recommendation (LoR) from Town Vending Committee'],
       application_process: ['Direct application via Urban Local Body or Portal', 'Branch endorsement', 'Disbursement within 48 hours', 'On-time repayment unlocks next higher tranche']
     },
     {
@@ -180,6 +194,8 @@ const store = {
       min_age: 18,
       max_age: 72,
       max_income: 400000,
+      is_marginalized_entrepreneur: false,
+      marginalized_focus: null,
       target_occupations: ['Farmer', 'Cultivator'],
       required_documents: ['7/12 Land Record', 'Water source certificate (Well / Borewell)', 'Electricity bill or Solar application', 'Aadhaar & Bank details'],
       application_process: ['Submit via Taluka Agriculture Office or MahaDBT', 'Technical survey of field', 'Approval of equipment installation', 'Direct DBT subsidy release']
@@ -201,6 +217,8 @@ const store = {
       min_age: 60,
       max_age: 100,
       max_income: 150000,
+      is_marginalized_entrepreneur: false,
+      marginalized_focus: null,
       target_occupations: ['Senior Citizen', 'Retired', 'Homemaker', 'Unemployed Youth'],
       required_documents: ['Age Proof (Birth cert / Voter ID / Aadhaar)', 'BPL Card or Tehsildar Income Certificate', 'Bank Account Passbook'],
       application_process: ['Apply at Gram Panchayat / Municipal Ward Office', 'Tehsildar verification', 'Monthly DBT pension directly into citizen account']
@@ -222,8 +240,10 @@ const store = {
       min_age: 18,
       max_age: 55,
       max_income: 300000,
+      is_marginalized_entrepreneur: true,
+      marginalized_focus: 'Backward Classes, OBC, SC/ST, Minority Women Entrepreneurs & SHG Members',
       target_occupations: ['Women', 'Artisan / Weaver', 'Small Business', 'Self Employed'],
-      required_documents: ['Self Help Group Membership proof', 'Aadhaar Card', 'Community/OBC Certificate', 'Bank Account Passbook'],
+      required_documents: ['Self Help Group (SHG) Membership Proof or Individual Unit Registration', 'Aadhaar Card & PAN Card', 'Caste / Backward Community Certificate', 'Bank Account Passbook with IFSC', 'Income Certificate from Tehsildar'],
       application_process: ['Application through MAVIM or empanelled State Channelizing Agency', 'Group scrutiny', 'Sanction and training', 'Direct disbursement']
     },
     {
@@ -243,8 +263,10 @@ const store = {
       min_age: 18,
       max_age: 35,
       max_income: 450000,
+      is_marginalized_entrepreneur: true,
+      marginalized_focus: 'Certified Vocational Trainees, ITI Grads, Young Artisans & First-Generation Youth',
       target_occupations: ['Student / Graduate', 'Artisan / Weaver', 'Self Employed', 'Unemployed Youth'],
-      required_documents: ['Skill Certification / ITI Diploma', 'Project Quotation', 'Aadhaar & PAN Card', 'Residential Certificate'],
+      required_documents: ['Skill Certification / ITI Diploma / Vocational Certificate', 'Project Quotation for tools & equipment', 'Aadhaar Card & PAN Card', 'Proof of Residence in Maharashtra'],
       application_process: ['Apply through District Industry Centre (DIC)', 'Technical feasibility interview', 'Bank sanction with Credit Guarantee']
     }
   ],

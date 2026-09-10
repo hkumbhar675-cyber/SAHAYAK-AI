@@ -8,7 +8,8 @@ router.post('/check', (req, res) => {
   try {
     const {
       citizen = {},
-      scheme_id
+      scheme_id,
+      marginalized_only
     } = req.body;
 
     if (scheme_id) {
@@ -24,8 +25,15 @@ router.post('/check', (req, res) => {
       });
     }
 
-    // Evaluate all schemes
-    const results = store.schemes.map(scheme => {
+    // Determine candidate schemes (filtered for marginalized entrepreneurs if requested)
+    const isMarginalizedOnly = marginalized_only === true || citizen.marginalized_only === true;
+    let candidateSchemes = store.schemes;
+    if (isMarginalizedOnly) {
+      candidateSchemes = candidateSchemes.filter(s => s.is_marginalized_entrepreneur);
+    }
+
+    // Evaluate candidate schemes
+    const results = candidateSchemes.map(scheme => {
       const rules = store.rules.filter(r => r.scheme_id === scheme.id);
       return evaluateSchemeEligibility(citizen, scheme, rules);
     });

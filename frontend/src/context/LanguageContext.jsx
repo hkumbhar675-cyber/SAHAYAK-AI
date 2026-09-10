@@ -86,7 +86,14 @@ export const translations = {
     why_eligible_label: 'Why Eligible / Ineligible Explanation',
     btn_calculate: 'Calculate Assistance',
     btn_find_partners: 'Find Eligible Partners',
-    btn_apply_now: 'Apply Now'
+    btn_apply_now: 'Apply Now',
+    filter_marginalized_only: 'Marginalized Entrepreneurs Only',
+    filter_all_schemes: 'All Schemes',
+    badge_marginalized: 'Marginalized Entrepreneurs Focus',
+    required_docs_title: 'Required Verification Documents',
+    checklist_toggle: 'Readiness Checklist',
+    doc_checklist_summary: 'Tick the documents you have ready for instant verification:',
+    marginalized_banner_text: 'Showing verified schemes for Marginalized Entrepreneurs (SC/ST, Women, OBC/Minorities, Artisans & Street Vendors)'
   },
   
   hi: {
@@ -166,7 +173,14 @@ export const translations = {
     why_eligible_label: 'पात्रता का कारण',
     btn_calculate: 'सहायता की गणना करें',
     btn_find_partners: 'पात्र भागीदार खोजें',
-    btn_apply_now: 'अभी आवेदन करें'
+    btn_apply_now: 'अभी आवेदन करें',
+    filter_marginalized_only: 'केवल वंचित एवं महिला उद्यमी',
+    filter_all_schemes: 'सभी योजनाएं',
+    badge_marginalized: 'वंचित उद्यमी विशेष योजना',
+    required_docs_title: 'आवश्यक सत्यापन दस्तावेज',
+    checklist_toggle: 'दस्तावेज़ चेकलिस्ट',
+    doc_checklist_summary: 'सत्यापन हेतु अपने पास उपलब्ध दस्तावेजों पर टिक करें:',
+    marginalized_banner_text: 'वंचित उद्यमियों (SC/ST, महिला, पिछड़े वर्ग, कारीगर एवं फेरीवाले) हेतु विशेष योजनाएं प्रदर्शित'
   },
   
   mr: {
@@ -246,7 +260,14 @@ export const translations = {
     why_eligible_label: 'पात्रतेचे कारण',
     btn_calculate: 'आर्थिक सहाय्य मोजा',
     btn_find_partners: 'पात्र भागीदार शोधा',
-    btn_apply_now: 'आता अर्ज करा'
+    btn_apply_now: 'आता अर्ज करा',
+    filter_marginalized_only: 'केवळ वंचित व महिला उद्योजक',
+    filter_all_schemes: 'सर्व योजना',
+    badge_marginalized: 'वंचित उद्योजक विशेष उपक्रम',
+    required_docs_title: 'आवश्यक पडताळणी कागदपत्रे',
+    checklist_toggle: 'कागदपत्र चेकलिस्ट',
+    doc_checklist_summary: 'पडताळणीसाठी तुमच्याकडे तयार असलेल्या कागदपत्रांवर खूण करा:',
+    marginalized_banner_text: 'वंचित व मागासवर्गीय उद्योजकांसाठी (SC/ST, महिला, कारागीर व फेरीवाले) विशेष योजना प्रदर्शित'
   }
 };
 

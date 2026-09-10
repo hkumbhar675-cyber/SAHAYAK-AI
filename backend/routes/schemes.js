@@ -5,8 +5,12 @@ const { store } = require('../db/db');
 // GET /api/schemes - list schemes with optional search & category filter
 router.get('/', (req, res) => {
   try {
-    const { category, search, occupation } = req.query;
+    const { category, search, occupation, marginalized_only } = req.query;
     let schemes = [...store.schemes];
+
+    if (marginalized_only === 'true' || marginalized_only === true) {
+      schemes = schemes.filter(s => s.is_marginalized_entrepreneur);
+    }
 
     if (category && category !== 'All') {
       schemes = schemes.filter(s => s.category.toLowerCase() === category.toLowerCase());
